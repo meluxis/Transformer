@@ -1,13 +1,15 @@
 import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 import numpy as np
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_absolute_error
 import os
 import matplotlib.pyplot as plt
 
 #----------------------------------------------------------------------------------------------
 #Code only adaptable for stock market yet
 #---------------------------------------------------------------------------------------------
+#Date,Open,High,Low,Close,Adj Close,Volume
+#50.099998474121094,51.040000915527344,50.040000915527344,50.61000061035156,26.6218318939209,1109100
 
 # Load the dataset
 directory = './stocks/AEE.csv'
@@ -59,10 +61,10 @@ def predictions(data, list_testing_days_prior):
         yhat = model.predict(X_test_avg)
         list_prediction.append(yhat[0])
 
-        mse = mean_squared_error([df.loc[prediction_date, 'Adj Close']], [yhat[0]])
-        rmse = np.sqrt(mse)
-        list_error_prediction.append(rmse)
-        print(f"for {i} prediction days before 03-03-2006, Predicted Adj Closing value is {yhat[0]}, RMSE:{rmse}")
+        #mae
+        mae = mean_absolute_error([df.loc[prediction_date, 'Adj Close']], [yhat[0]])
+        list_error_prediction.append(mae)
+        print(f"for {i} prediction days before 03-03-2006, Predicted Adj Closing value is {yhat[0]}, MAE:{mae}")
     return list_prediction
 
 print("Actual value", df.loc[prediction_date, 'Adj Close'])
