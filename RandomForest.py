@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 #Code only adaptable for stock market yet
 #---------------------------------------------------------------------------------------------
 #Date,Open,High,Low,Close,Adj Close,Volume
+#50.099998474121094,51.040000915527344,50.040000915527344,50.61000061035156,26.6218318939209,1109100
 
 # Load the dataset
 directory = './stocks/AEE.csv'
