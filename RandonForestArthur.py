@@ -1,36 +1,56 @@
-# forecast monthly births with random forest
-from numpy import asarray
+
+import numpy as np
 from pandas import read_csv
-from pandas import DataFrame
-from pandas import concat
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 from sklearn.ensemble import RandomForestRegressor
-from matplotlib import pyplot
-from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
 
-df = read_csv("AEE.csv")
-df = df[(df['Date'] <= '2006-03-03') & (df['Date'] >= '2004-03-03')]
+df_og = read_csv("stocks/PAC.csv")
+prediction_traget=df_og[(df_og['Date'] >= '2019-01-01')&(df_og['Date']<'2020-01-01')]
+df = df_og[(df_og['Date'] < '2019-01-01') & (df_og['Date'] >= '2017-01-01')]
 date = df['Date']
-X = df.drop(columns=['Close', 'Date']).values
-y = df['Close'].values
+df=df.drop(columns=['Date'])
 
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+def create_sliding_window(df, window_size):
+    X, y = [], []
+    for i in range(len(df) - window_size):
+        X.append(df.iloc[i:i + window_size]['Close'])
+        y.append(df.iloc[i + window_size]['Close'])
+    return np.array(X), np.array(y)
+X, y = create_sliding_window(df,len(prediction_traget))
 
-RFClassifier = RandomForestRegressor(n_estimators=100, random_state=42)
-RFClassifier.fit(X_scaled, y)
+split_index = int(len(X) * 0.8)
 
-last_data_point = X_scaled[-1].reshape(1, -1)
-scaled_last_data = scaler.transform(last_data_point)
-predicted_last_data = RFClassifier.predict(scaled_last_data)
-print(f'Prédiction pour le 3 mai 2006 : {predicted_last_data[0]}')
+X_train, X_test = X[:split_index], X[split_index:]
+y_train, y_test = y[:split_index], y[split_index:]
 
-true_value = [y[-1]]
-mae = mean_absolute_error(true_value, predicted_last_data)
-mse = mean_squared_error(true_value, predicted_last_data)
+model = RandomForestRegressor(n_estimators=100, random_state=42)
 
-print(f'MAE : {mae}')
-print(f'MSE : {mse}')
+model.fit(X_train, y_train)
 
-print(f'Actual value: {y[-1]}')
+y_pred = model.predict(X_test)
+
+mse = mean_squared_error(y_test, y_pred)
+mae = mean_absolute_error(y_test, y_pred)
+print(f"Mean Squared Error: {mse}")
+print(f"Mean Absolute Error: {mae}")
+print(f"RMSE: {np.sqrt(mse)}")
+
+def forecast(model, data, window_size, nb_days):
+    predictions=[]
+    current_window=data[-window_size:].tolist()
+    print(current_window)
+    for i in range(nb_days):
+        prediction=model.predict([current_window])[0]
+        predictions.append(prediction)
+        current_window.append(prediction)
+        current_window.pop(0)
+    return predictions
+future_predictions = forecast(model, df['Close'].values, window_size=len(prediction_traget), nb_days=len(prediction_traget))
+print("Future predictions ", future_predictions)
+
+plt.plot(prediction_traget['Close'].tolist())
+plt.plot(future_predictions)
+plt.show()
