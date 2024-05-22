@@ -13,13 +13,16 @@ df = df_og[(df_og['Date'] < '2019-01-01') & (df_og['Date'] >= '2017-01-01')]
 date = df['Date']
 df=df.drop(columns=['Date'])
 
+#Hyperparameters
+window_size = 7
+
 def create_sliding_window(df, window_size):
     X, y = [], []
     for i in range(len(df) - window_size):
         X.append(df.iloc[i:i + window_size]['Close'])
         y.append(df.iloc[i + window_size]['Close'])
     return np.array(X), np.array(y)
-X, y = create_sliding_window(df,len(prediction_traget))
+X, y = create_sliding_window(df,window_size)
 
 split_index = int(len(X) * 0.8)
 
@@ -38,19 +41,21 @@ print(f"Mean Squared Error: {mse}")
 print(f"Mean Absolute Error: {mae}")
 print(f"RMSE: {np.sqrt(mse)}")
 
+model.fit(X,y)
+
 def forecast(model, data, window_size, nb_days):
     predictions=[]
     current_window=data[-window_size:].tolist()
-    print(current_window)
     for i in range(nb_days):
         prediction=model.predict([current_window])[0]
         predictions.append(prediction)
         current_window.append(prediction)
         current_window.pop(0)
     return predictions
-future_predictions = forecast(model, df['Close'].values, window_size=len(prediction_traget), nb_days=len(prediction_traget))
+
+future_predictions = forecast(model, df['Close'].values, window_size, 7)
 print("Future predictions ", future_predictions)
 
-plt.plot(prediction_traget['Close'].tolist())
+plt.plot(prediction_traget['Close'][:7].tolist())
 plt.plot(future_predictions)
 plt.show()

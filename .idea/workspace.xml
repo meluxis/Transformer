@@ -5,10 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6f78df6c-babd-42a3-8ced-d599e587f908" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/TransformerV1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Transformer.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Transformer.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/RandonForestArthur.py" beforeDir="false" afterPath="$PROJECT_DIR$/RandonForestArthur.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -308,7 +304,7 @@
       <workItem from="1715000407008" duration="1913000" />
       <workItem from="1716285763130" duration="728000" />
       <workItem from="1716289683040" duration="6904000" />
-      <workItem from="1716394979805" duration="8527000" />
+      <workItem from="1716394979805" duration="8981000" />
     </task>
     <servers />
   </component>
@@ -323,7 +319,7 @@
     <select />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/Transformer$RandonForestArthur.coverage" NAME="RandonForestArthur Coverage Results" MODIFIED="1716414819993" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Transformer$RandonForestArthur.coverage" NAME="RandonForestArthur Coverage Results" MODIFIED="1716415289946" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Transformer$Plot.coverage" NAME="Plot Coverage Results" MODIFIED="1716396201237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Transformer$TransformerV1.coverage" NAME="TransformerV1 Coverage Results" MODIFIED="1716303152934" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
