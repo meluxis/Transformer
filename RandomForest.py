@@ -63,9 +63,10 @@ def predictions(data, list_testing_days_prior):
         #mae
         mae = mean_absolute_error([df.loc[prediction_date, 'Adj Close']], [yhat[0]])
         list_error_prediction.append(mae)
-        print(f"for {i} prediction days before 03-03-2006, Predicted Adj Closing value is {yhat[0]}, MAE:{mae}")
+        print(f"for {i} prediction days before 2020-04-01, Predicted Adj Closing value is {yhat[0]}, MAE:{mae}")
     return list_prediction
 
 print("Actual value", df.loc[prediction_date, 'Adj Close'])
 print(predictions(df, list_testing_days_prior))
 print("error", list_error_prediction)
+
