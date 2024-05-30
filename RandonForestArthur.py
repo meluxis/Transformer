@@ -1,4 +1,3 @@
-
 import numpy as np
 from pandas import read_csv
 from sklearn.metrics import mean_absolute_error
@@ -8,13 +7,15 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
 df_og = read_csv("stocks/PAC.csv")
-prediction_traget=df_og[(df_og['Date'] >= '2019-01-01')&(df_og['Date']<'2020-01-01')]
+
+prediction_traget = df_og[(df_og['Date'] >= '2019-01-01') & (df_og['Date'] < '2020-01-01')]
 df = df_og[(df_og['Date'] < '2019-01-01') & (df_og['Date'] >= '2017-01-01')]
 date = df['Date']
-df=df.drop(columns=['Date'])
+df = df.drop(columns=['Date'])
 
-#Hyperparameters
+# Hyperparameters
 window_size = 7
+
 
 def create_sliding_window(df, window_size):
     X, y = [], []
@@ -22,7 +23,9 @@ def create_sliding_window(df, window_size):
         X.append(df.iloc[i:i + window_size]['Close'])
         y.append(df.iloc[i + window_size]['Close'])
     return np.array(X), np.array(y)
-X, y = create_sliding_window(df,window_size)
+
+X, y = create_sliding_window(df, window_size)
+
 
 split_index = int(len(X) * 0.8)
 
@@ -41,13 +44,15 @@ print(f"Mean Squared Error: {mse}")
 print(f"Mean Absolute Error: {mae}")
 print(f"RMSE: {np.sqrt(mse)}")
 
-model.fit(X,y)
+
+model.fit(X, y)
+
 
 def forecast(model, data, window_size, nb_days):
-    predictions=[]
-    current_window=data[-window_size:].tolist()
+    predictions = []
+    current_window = data[-window_size:].tolist()
     for i in range(nb_days):
-        prediction=model.predict([current_window])[0]
+        prediction = model.predict([current_window])[0]
         predictions.append(prediction)
         current_window.append(prediction)
         current_window.pop(0)
@@ -59,3 +64,4 @@ print("Future predictions ", future_predictions)
 plt.plot(prediction_traget['Close'][:7].tolist())
 plt.plot(future_predictions)
 plt.show()
+
