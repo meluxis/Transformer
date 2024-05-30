@@ -13,7 +13,7 @@ date = df['Date']
 df = df.drop(columns=['Date'])
 
 # Hyperparamètres
-window_size = 150
+window_size = 20
 
 # Fonction pour créer une fenêtre glissante
 def create_sliding_window(df, window_size):
@@ -77,7 +77,7 @@ plt.plot(prediction_target['Close'][:14].tolist(), label='Prediction Target')
 plt.plot(future_predictions_rf, label='RandomForest Prediction', color='green')
 plt.plot(future_predictions_xgb, label='XGBoost Prediction', color='orange')
 
-plt.title('Prediction and Reality on Closing Price with 150 Days Window (JNJ)')
+plt.title('Prediction and Reality on Closing Price with 20 Days Window (JNJ)')
 plt.xlabel('Days')
 plt.ylabel('Closing Price')
 plt.legend()
