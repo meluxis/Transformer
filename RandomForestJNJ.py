@@ -14,7 +14,7 @@ date = df['Date']
 df=df.drop(columns=['Date'])
 
 #Hyperparameters
-window_size = 30
+window_size = 365
 
 def create_sliding_window(df, window_size):
     X, y = [], []
@@ -53,13 +53,13 @@ def forecast(model, data, window_size, nb_days):
         current_window.pop(0)
     return predictions
 
-future_predictions = forecast(model, df['Close'].values, window_size, 14)
+future_predictions = forecast(model, df['Close'].values, window_size, 365)
 print("Future predictions ", future_predictions)
 
-plt.plot(prediction_traget['Close'][:14].tolist(), label='Prediction Target')
+plt.plot(prediction_traget['Close'][:365].tolist(), label='Prediction Target')
 plt.plot(future_predictions, label=' Our Prediction ')
 
-plt.title('Prediction and Reality on closing price with 14 days window (JNJ)')
+plt.title('Prediction and Reality on closing price with 365 days window (JNJ)')
 plt.xlabel('Days')
 plt.ylabel('Closing Price')
 
