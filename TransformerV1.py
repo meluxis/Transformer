@@ -1,8 +1,8 @@
-# Work In Progress
 import pandas as pd
 import numpy as np
 import torch
 from sklearn.preprocessing import MinMaxScaler
+
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
@@ -12,17 +12,14 @@ data = df['Close'][(df['Date'] < '2019-01-01') & (df['Date'] >= '2018-01-01')].v
 scaler = MinMaxScaler(feature_range=(0, 1))
 data = scaler.fit_transform(data.reshape(-1, 1))
 
-
-# Create sequences
 def create_sequences(data, seq_length):
     xs, ys = [], []
     for i in range(len(data) - seq_length):
-        x = data[i:i + seq_length]
-        y = data[i + seq_length]
+        x = data[i:i+seq_length]
+        y = data[i+seq_length]
         xs.append(x)
         ys.append(y)
     return np.array(xs), np.array(ys)
-
 
 seq_length = 30
 X, y = create_sequences(data, seq_length)

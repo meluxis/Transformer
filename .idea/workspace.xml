@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6f78df6c-babd-42a3-8ced-d599e587f908" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/TransformerV2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RandonForestArthur.py" beforeDir="false" afterPath="$PROJECT_DIR$/RandonForestArthur.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TransformerV1.py" beforeDir="false" afterPath="$PROJECT_DIR$/TransformerV1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RandomForestJNJ.py" beforeDir="false" afterPath="$PROJECT_DIR$/RandomForestJNJ.py" afterDir="false" />
+
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +52,7 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
@@ -106,7 +108,7 @@
       <option name="ADDITIONAL_ARGS" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Plot" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="RandonForestArthur" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Transformer" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -115,6 +117,7 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
+
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -318,6 +321,7 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
+
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
     <select />
@@ -326,5 +330,6 @@
     <SUITE FILE_PATH="coverage/Transformer$RandonForestArthur.coverage" NAME="RandonForestArthur Coverage Results" MODIFIED="1716560791255" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Transformer$Plot.coverage" NAME="Plot Coverage Results" MODIFIED="1716396201237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Transformer$TransformerV1.coverage" NAME="TransformerV1 Coverage Results" MODIFIED="1716571221652" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+
   </component>
 </project>
