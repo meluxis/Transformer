@@ -1,4 +1,3 @@
-
 import numpy as np
 from pandas import read_csv
 from sklearn.metrics import mean_absolute_error
@@ -14,7 +13,7 @@ date = df['Date']
 df=df.drop(columns=['Date'])
 
 #Hyperparameters
-window_size = 365
+window_size = 73
 
 def create_sliding_window(df, window_size):
     X, y = [], []
@@ -53,13 +52,13 @@ def forecast(model, data, window_size, nb_days):
         current_window.pop(0)
     return predictions
 
-future_predictions = forecast(model, df['Close'].values, window_size, 365)
+future_predictions = forecast(model, df['Close'].values, window_size, 14)
 print("Future predictions ", future_predictions)
 
-plt.plot(prediction_traget['Close'][:365].tolist(), label='Prediction Target')
+plt.plot(prediction_traget['Close'][:14].tolist(), label='Prediction Target')
 plt.plot(future_predictions, label=' Our Prediction ')
 
-plt.title('Prediction and Reality on closing price with 365 days window (JNJ)')
+plt.title('Prediction and Reality on closing price with 73 days window (JNJ)')
 plt.xlabel('Days')
 plt.ylabel('Closing Price')
 
