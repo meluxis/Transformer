@@ -6,8 +6,8 @@ from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
-df = pd.read_csv('stocks/PAC.csv')
-data = df['Close'][(df['Date'] < '2019-01-01') & (df['Date'] >= '2018-01-01')].values
+df = pd.read_csv('stocks/JNJ.csv')
+data = df['Close'][(df['Date'] < '2019-01-01') & (df['Date'] >= '2016-01-01')].values
 
 scaler = MinMaxScaler(feature_range=(0, 1))
 data = scaler.fit_transform(data.reshape(-1, 1))
@@ -49,12 +49,12 @@ class PositionalEncoding(torch.nn.Module):
         return x + self.pe[:x.size(0), :]
 
 class TimeSeriesTransformer(torch.nn.Module):
-    def __init__(self, feature_size=128, num_layers=3, dropout=0.1):
+    def __init__(self, feature_size=128, num_layers=9, dropout=0.1):
         super(TimeSeriesTransformer, self).__init__()
         self.model_type = 'Transformer'
         self.src_mask = None
         self.pos_encoder = PositionalEncoding(feature_size)
-        self.encoder_layer = torch.nn.TransformerEncoderLayer(d_model=feature_size, nhead=8, dropout=dropout)
+        self.encoder_layer = torch.nn.TransformerEncoderLayer(d_model=feature_size, nhead=16, dropout=dropout)
         self.transformer_encoder = torch.nn.TransformerEncoder(self.encoder_layer, num_layers=num_layers)
         self.decoder = torch.nn.Linear(feature_size, 1)
         self.feature_size = feature_size
@@ -107,8 +107,11 @@ predictions = scaler.inverse_transform(predictions.reshape(-1, 1))
 actuals = scaler.inverse_transform(y_test.numpy().reshape(-1, 1))
 print(predictions)
 print(actuals)
-plt.plot(actuals, label='Actual')
-plt.plot(predictions, label='Predicted')
+plt.plot(actuals, label='Prediction Target',color='blue')
+plt.plot(predictions, label='Transformer Prediction',color='black')
+plt.title('Transformer model prediction and reality on Closing Price')
+plt.xlabel('Days')
+plt.ylabel('Closing Price')
 plt.legend()
 plt.show()
 
