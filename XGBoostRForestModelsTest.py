@@ -9,8 +9,8 @@ from sklearn.ensemble import RandomForestRegressor
 import matplotlib.pyplot as plt
 
 # Chargement des données
-df = pd.read_csv('stocks/JNJ.csv')
-data = df['Close'][(df['Date'] < '2019-01-01') & (df['Date'] >= '2013-01-01')].values
+df = pd.read_csv('GOOG.csv')
+data = df['Close'][(df['Date'] < '2019-01-01') & (df['Date'] >= '2017-01-01')].values
 
 # Normalisation des données
 scaler = MinMaxScaler(feature_range=(0, 1))
@@ -27,7 +27,7 @@ def create_sequences(data, seq_length):
     return np.array(xs), np.array(ys)
 
 # Création des séquences
-seq_length = 7
+seq_length = 73
 X, y = create_sequences(data, seq_length)
 split_index = int(len(X) * 0.8)
 X_train, X_test = X[:split_index], X[split_index:]
@@ -57,9 +57,9 @@ rf_predictions = scaler.inverse_transform(rf_predictions.reshape(-1, 1))
 actuals = scaler.inverse_transform(y_test.reshape(-1, 1))
 
 # Derniers 14 jours
-xgb_predictions_last14 = xgb_predictions[-7:]
-rf_predictions_last14 = rf_predictions[-7:]
-actuals_last14 = actuals[-7:]
+xgb_predictions_last14 = xgb_predictions[-30:]
+rf_predictions_last14 = rf_predictions[-30:]
+actuals_last14 = actuals[-30:]
 
 # Calcul des métriques pour XGBoost
 xgb_mse = mean_squared_error(actuals_last14, xgb_predictions_last14)
@@ -86,7 +86,7 @@ plt.figure(figsize=(12, 6))
 plt.plot(actuals_last14, label='Prix de clôture réel', color='blue')
 plt.plot(xgb_predictions_last14, label='Prix de clôture prédit (XGBoost)', color='green')
 plt.plot(rf_predictions_last14, label='Prix de clôture prédit (RandomForest)', color='red')
-plt.title('Prediction and Reality on Closing Price with 7 Days Window (JNJ)')
+plt.title('Prediction and Reality on Closing Price with 73 Days Window')
 plt.xlabel('Jours')
 plt.ylabel('Prix de clôture')
 plt.legend()
