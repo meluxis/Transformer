@@ -8,12 +8,12 @@ import matplotlib.pyplot as plt
 # Chargement des données
 df_og = read_csv("stocks/JNJ.csv")
 prediction_target = df_og[(df_og['Date'] >= '2019-01-01') & (df_og['Date'] < '2020-01-01')]
-df = df_og[(df_og['Date'] < '2019-01-01') & (df_og['Date'] >= '2017-01-01')]
+df = df_og[(df_og['Date'] < '2019-01-01') & (df_og['Date'] >= '2016-01-01')]
 date = df['Date']
 df = df.drop(columns=['Date'])
 
 # Hyperparamètres
-window_size = 20
+window_size = 30
 
 # Fonction pour créer une fenêtre glissante
 def create_sliding_window(df, window_size):
@@ -66,18 +66,18 @@ def forecast(model, data, window_size, nb_days):
     return predictions
 
 # Prédictions futures
-future_predictions_rf = forecast(rf_model, df['Close'].values, window_size, 14)
-future_predictions_xgb = forecast(xgb_model, df['Close'].values, window_size, 14)
+future_predictions_rf = forecast(rf_model, df['Close'].values, window_size, 30)
+future_predictions_xgb = forecast(xgb_model, df['Close'].values, window_size, 30)
 
 print("Future predictions RandomForest: ", future_predictions_rf)
 print("Future predictions XGBoost: ", future_predictions_xgb)
 
 # Tracé des résultats
-plt.plot(prediction_target['Close'][:14].tolist(), label='Prediction Target')
+plt.plot(prediction_target['Close'][:30].tolist(), label='Prediction Target')
 plt.plot(future_predictions_rf, label='RandomForest Prediction', color='green')
 plt.plot(future_predictions_xgb, label='XGBoost Prediction', color='orange')
 
-plt.title('Prediction and Reality on Closing Price with 20 Days Window (JNJ)')
+plt.title('Prediction and Reality on Closing Price with 30 Days Window (JNJ)')
 plt.xlabel('Days')
 plt.ylabel('Closing Price')
 plt.legend()
