@@ -5,15 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7ae41b1f-b688-48fa-a51f-e0aaa7c107e9" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/TransformerModelPrediction.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/TransformerModelTest.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/XGBoostRForestModelsPrediction.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/XGBoostRForestModelsTest.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TransformerV1.py" beforeDir="false" afterPath="$PROJECT_DIR$/TransformerV1.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TransformerV2.py" beforeDir="false" afterPath="$PROJECT_DIR$/TransformerV2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/XGBoostRF_JNJ.py" beforeDir="false" afterPath="$PROJECT_DIR$/XGBoostRF_JNJ.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/RandomForestJNJ.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/RandonForestArthur.py" beforeDir="false" afterPath="$PROJECT_DIR$/RandonForestArthur.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/predRF.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,7 +85,7 @@
       <option name="presentableId" value="Default" />
       <updated>1717142924114</updated>
       <workItem from="1717142925655" duration="24118000" />
-      <workItem from="1717229867442" duration="36586000" />
+      <workItem from="1717229867442" duration="36877000" />
     </task>
     <servers />
   </component>
