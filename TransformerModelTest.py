@@ -1,48 +1,35 @@
-import pandas as pd
 import numpy as np
 import torch
+import torch.nn as nn
+import torch.optim as optim
+from pandas import read_csv
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
-from sklearn.metrics import mean_squared_error, mean_absolute_error
-from math import sqrt
-
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 
 # Chargement des données
-df = pd.read_csv('stocks/JNJ.csv') #à adapter selon dataset utilisé
-#Prediction target temporelle entre 2019 et 2013
-data = df['Close'][(df['Date'] < '2019-01-01') & (df['Date'] >= '2013-01-01')].values
+df_og = read_csv("stocks/GOOG.csv") #à adapter selon dataset utilisé
+#Prediction target temporelle entre 2019 et 2020
+prediction_target = df_og[(df_og['Date'] >= '2019-01-01') & (df_og['Date'] < '2020-01-01')]
+#Periode d'entraînement du modèle
+df = df_og[(df_og['Date'] < '2019-01-01') & (df_og['Date'] >= '2017-01-01')]
+date = df['Date']  #Récupération de la colonne des dates
+df = df.drop(columns=['Date'])   #Supression de la colonne date dans le dataset
 
 # Normalisation des données
 scaler = MinMaxScaler(feature_range=(0, 1))
-data = scaler.fit_transform(data.reshape(-1, 1))
+df['Close'] = scaler.fit_transform(df['Close'].values.reshape(-1, 1))
 
-# Fonction pour créer les séquences
-def create_sequences(data, seq_length):
-    xs, ys = [], []
-    for i in range(len(data) - seq_length):
-        x = data[i:i+seq_length]
-        y = data[i+seq_length]
-        xs.append(x)
-        ys.append(y)
-    return np.array(xs), np.array(ys)
+# Fonction pour créer une fenêtre glissante
+def create_sliding_window(df, window_size):
+    X, y = [], []
+    for i in range(len(df) - window_size):
+        X.append(df.iloc[i:i + window_size]['Close'])
+        y.append(df.iloc[i + window_size]['Close'])
+    return np.array(X), np.array(y)
 
-# Création des séquences
-seq_length = 14 #a adapter selon efficacité
-X, y = create_sequences(data, seq_length)
-
-#Séparation des données d'entrainement et de test
-split_index = int(len(X) * 0.8)
-X_train, X_test = X[:split_index], X[split_index:]
-y_train, y_test = y[:split_index], y[split_index:]
-
-# Conversion en tenseurs PyTorch
-X_train = torch.tensor(X_train, dtype=torch.float32)
-y_train = torch.tensor(y_train, dtype=torch.float32).view(-1, 1)  # Assurer que la cible a la forme (N, 1)
-X_test = torch.tensor(X_test, dtype=torch.float32)
-y_test = torch.tensor(y_test, dtype=torch.float32).view(-1, 1)    # Assurer que la cible a la forme (N, 1)
-
-#Etape du positional encoding
-class PositionalEncoding(torch.nn.Module):
+#Positional encoding
+class PositionalEncoding(nn.Module):
     def __init__(self, d_model, max_len=5000):
         super(PositionalEncoding, self).__init__()
         pe = torch.zeros(max_len, d_model)
@@ -53,87 +40,112 @@ class PositionalEncoding(torch.nn.Module):
         pe = pe.unsqueeze(0).transpose(0, 1)
         self.register_buffer('pe', pe)
 
-    # Création du cycle entre les encoders et decoders
     def forward(self, x):
-        return x + self.pe[:x.size(0), :]
+        x = x + self.pe[:x.size(0), :]
+        return x
 
 # Création du modèle transformer
-class TimeSeriesTransformer(torch.nn.Module):
-    def __init__(self, feature_size=128, num_layers=9, dropout=0.1):
-        super(TimeSeriesTransformer, self).__init__()
+class TransformerTimeSeries(nn.Module):
+    def __init__(self, input_dim, num_heads, num_encoder_layers, dim_feedforward, dropout, max_len=5000):
+        super(TransformerTimeSeries, self).__init__()
         self.model_type = 'Transformer'
-        self.src_mask = None
-        self.pos_encoder = PositionalEncoding(feature_size)
-        self.encoder_layer = torch.nn.TransformerEncoderLayer(d_model=feature_size, nhead=16, dropout=dropout)
-        self.transformer_encoder = torch.nn.TransformerEncoder(self.encoder_layer, num_layers=num_layers)
-        self.decoder = torch.nn.Linear(feature_size, 1)
-        self.feature_size = feature_size
+        self.input_dim = input_dim
+        self.positional_encoding = PositionalEncoding(input_dim, max_len)
+        self.encoder_layer = nn.TransformerEncoderLayer(d_model=input_dim, nhead=num_heads,
+                                                        dim_feedforward=dim_feedforward, dropout=dropout)
+        self.transformer_encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=num_encoder_layers)
+        self.fc = nn.Linear(input_dim, 1)
 
     def forward(self, src):
-        src = self.pos_encoder(src.permute(1, 0, 2))
+        src = self.positional_encoding(src.transpose(0, 1))  # Apply positional encoding and transpose for Transformer
         output = self.transformer_encoder(src)
-        output = self.decoder(output.permute(1, 0, 2))
-        return output[:, -1, :].view(-1, 1)  # Assurer que la sortie a la forme (N, 1)
+        output = self.fc(output[-1, :, :])
+        return output
 
-#Initie les hyperparamètres
-feature_size = 64
-num_layers = 3
+
+# Prévision future
+def forecast_transformer(model, data, window_size, nb_days):
+    model.eval()
+    predictions = []
+    current_window = torch.tensor(data[-window_size:], dtype=torch.float32).unsqueeze(-1).repeat(1, input_dim)
+    for _ in range(nb_days):
+        with torch.no_grad():
+            src = current_window.unsqueeze(1)
+            prediction = model(src).squeeze().mean().item()
+        predictions.append(prediction)
+        new_window = current_window[1:].clone()
+        new_window = torch.cat((new_window, torch.tensor([[prediction] * input_dim])), dim=0)
+        current_window = new_window
+    return predictions
+
+
+#Sliding window
+#Taille de la fenêtre à adapter selon les tests, parmi la liste
+window_size =14  #[73, 30, 20, 14, 7]
+prediction_length= 30
+X, y = create_sliding_window(df, window_size)
+
+#Séparation des données d'entrainement et de test
+split_index = int(len(X) * 0.8)
+X_train, X_test = X[:split_index], X[split_index:]
+y_train, y_test = y[:split_index], y[split_index:]
+
+# Convertir en tenseurs PyTorch
+X_train = torch.tensor(X_train, dtype=torch.float32)
+X_test = torch.tensor(X_test, dtype=torch.float32)
+y_train = torch.tensor(y_train, dtype=torch.float32)
+y_test = torch.tensor(y_test, dtype=torch.float32)
+
+
+input_dim = 16  # Doit être divisible par num_heads
+num_heads = 4
+num_encoder_layers = 6
+dim_feedforward = 128
 dropout = 0.1
 
 #Instancie le model Transformer
-model = TimeSeriesTransformer(feature_size, num_layers, dropout)
+model = TransformerTimeSeries(input_dim, num_heads, num_encoder_layers, dim_feedforward, dropout)
 
-criterion = torch.nn.MSELoss() #fonction de perte
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)  #Optimiser Adam avec learning rate de 0.001
+# Ajuster les dimensions d'entrée
+X_train = X_train.unsqueeze(-1).repeat(1, 1, input_dim)
+X_test = X_test.unsqueeze(-1).repeat(1, 1, input_dim)
+
+# Entraînement du modèle
+criterion = nn.MSELoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+num_epochs = 100
 
 #boucle entrainement du model pour le nombre de boucle choisies
-num_epochs = 100
-batch_size = 64
-model.train()
 for epoch in range(num_epochs):
-    for i in range(0, len(X_train), batch_size):
-        X_batch = X_train[i:i+batch_size]
-        y_batch = y_train[i:i+batch_size]
-        optimizer.zero_grad()
-        output = model(X_batch)
-        loss = criterion(output, y_batch)
-        loss.backward()
-        optimizer.step()
-    if epoch % 10 == 0:
-        print(f'Epoch {epoch}, Loss: {loss.item()}')
+    model.train()
+    optimizer.zero_grad()
+    output = model(X_train)
+    loss = criterion(output.squeeze(), y_train)
+    loss.backward()
+    optimizer.step()
 
-# Test et évaluation
+    if (epoch + 1) % 10 == 0:
+        print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}')
+
+# Prédiction sur les données de test
 model.eval()
 with torch.no_grad():
-    test_output = model(X_test)
-    test_loss = criterion(test_output, y_test)
-    print(f'Loss de test: {test_loss.item()}')
+    test_pred = model(X_test).squeeze()
+    test_pred = scaler.inverse_transform(test_pred.numpy().reshape(-1, 1)).squeeze()
+    y_test_actual = scaler.inverse_transform(y_test.numpy().reshape(-1, 1)).squeeze()
 
-# Prédiction
-predictions = test_output.squeeze().detach().numpy()
+# Calcul des métriques d'erreur
+mse_test = mean_squared_error(y_test_actual, test_pred)
+mae_test = mean_absolute_error(y_test_actual, test_pred)
+print(f"Transformer - Mean Squared Error: {mse_test}")
+print(f"Transformer - Mean Absolute Error: {mae_test}")
+print(f"Transformer - RMSE: {np.sqrt(mse_test)}")
+plt.plot(y_test_actual, label='Y test')
+plt.plot(test_pred, label='Y prediction', color='blue')
 
-# Dénormalisation
-predictions = scaler.inverse_transform(predictions.reshape(-1, 1))
-actuals = scaler.inverse_transform(y_test.numpy().reshape(-1, 1))
-
-# Derniers 7 jours
-predictions_last7 = predictions[-14:]
-actuals_last7 = actuals[-14:]
-
-# Calcul des métriques
-mse = mean_squared_error(actuals_last7, predictions_last7)
-mae = mean_absolute_error(actuals_last7, predictions_last7)
-rmse = sqrt(mse)
-
-print(f'MSE: {mse}')
-print(f'MAE: {mae}')
-print(f'RMSE: {rmse}')
-
-# Visualisation
-plt.plot(actuals_last7, label='Prix de clôture réel', color='blue')
-plt.plot(predictions_last7, label='Prix de clôture prédit', color='black')
-plt.title('Prediction and Reality on Closing Price with 20 Days Window')
-plt.xlabel('Jours')
-plt.ylabel('Prix de clôture')
+plt.title(f'Performance on Closing Price with {window_size} Days Window ')
+plt.xlabel('Days')
+plt.ylabel('Closing Price')
 plt.legend()
+
 plt.show()

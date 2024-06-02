@@ -82,7 +82,7 @@ def forecast_transformer(model, data, window_size, nb_days):
 #Sliding window
 #Taille de la fenêtre à adapter selon les tests, parmi la liste
 window_size =14  #[73, 30, 20, 14, 7]
-prediction_length= 14
+prediction_length= 30
 X, y = create_sliding_window(df, window_size)
 
 #Séparation des données d'entrainement et de test
@@ -98,8 +98,8 @@ y_test = torch.tensor(y_test, dtype=torch.float32)
 
 
 input_dim = 16  # Doit être divisible par num_heads
-num_heads = 8
-num_encoder_layers = 3
+num_heads = 4
+num_encoder_layers = 6
 dim_feedforward = 128
 dropout = 0.1
 
@@ -140,6 +140,8 @@ mae_test = mean_absolute_error(y_test_actual, test_pred)
 print(f"Transformer - Mean Squared Error: {mse_test}")
 print(f"Transformer - Mean Absolute Error: {mae_test}")
 print(f"Transformer - RMSE: {np.sqrt(mse_test)}")
+plt.plot(y_test_actual, label='Prediction Target')
+plt.plot(test_pred, label='Transformer Prediction', color='blue')
 
 #Prevision future des prix de fermeture
 future_predictions_transformer = forecast_transformer(model, df['Close'].values, window_size, prediction_length)
@@ -150,6 +152,7 @@ future_predictions_transformer = scaler.inverse_transform(
 print("Future predictions Transformer: ", future_predictions_transformer)
 
 # Tracé des résultats
+plt.figure()
 plt.plot(prediction_target['Close'][:prediction_length].tolist(), label='Prediction Target')
 plt.plot(future_predictions_transformer, label='Transformer Prediction', color='blue')
 
