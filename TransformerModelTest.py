@@ -5,17 +5,18 @@ from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from math import sqrt
-from sklearn.model_selection import train_test_split
+
 
 # Chargement des données
-df = pd.read_csv('stocks/JNJ.csv')
+df = pd.read_csv('stocks/JNJ.csv') #à adapter selon dataset utilisé
+#Prediction target temporelle entre 2019 et 2013
 data = df['Close'][(df['Date'] < '2019-01-01') & (df['Date'] >= '2013-01-01')].values
 
 # Normalisation des données
 scaler = MinMaxScaler(feature_range=(0, 1))
 data = scaler.fit_transform(data.reshape(-1, 1))
 
-# Fonction pour créer des séquences
+# Fonction pour créer les séquences
 def create_sequences(data, seq_length):
     xs, ys = [], []
     for i in range(len(data) - seq_length):
@@ -26,8 +27,10 @@ def create_sequences(data, seq_length):
     return np.array(xs), np.array(ys)
 
 # Création des séquences
-seq_length = 14
+seq_length = 14 #a adapter selon efficacité
 X, y = create_sequences(data, seq_length)
+
+#Séparation des données d'entrainement et de test
 split_index = int(len(X) * 0.8)
 X_train, X_test = X[:split_index], X[split_index:]
 y_train, y_test = y[:split_index], y[split_index:]
@@ -37,6 +40,8 @@ X_train = torch.tensor(X_train, dtype=torch.float32)
 y_train = torch.tensor(y_train, dtype=torch.float32).view(-1, 1)  # Assurer que la cible a la forme (N, 1)
 X_test = torch.tensor(X_test, dtype=torch.float32)
 y_test = torch.tensor(y_test, dtype=torch.float32).view(-1, 1)    # Assurer que la cible a la forme (N, 1)
+
+#Etape du positional encoding
 class PositionalEncoding(torch.nn.Module):
     def __init__(self, d_model, max_len=5000):
         super(PositionalEncoding, self).__init__()
@@ -48,9 +53,11 @@ class PositionalEncoding(torch.nn.Module):
         pe = pe.unsqueeze(0).transpose(0, 1)
         self.register_buffer('pe', pe)
 
+    # Création du cycle entre les encoders et decoders
     def forward(self, x):
         return x + self.pe[:x.size(0), :]
 
+# Création du modèle transformer
 class TimeSeriesTransformer(torch.nn.Module):
     def __init__(self, feature_size=128, num_layers=9, dropout=0.1):
         super(TimeSeriesTransformer, self).__init__()
@@ -68,14 +75,18 @@ class TimeSeriesTransformer(torch.nn.Module):
         output = self.decoder(output.permute(1, 0, 2))
         return output[:, -1, :].view(-1, 1)  # Assurer que la sortie a la forme (N, 1)
 
-# Paramètres du modèle
+#Initie les hyperparamètres
 feature_size = 64
 num_layers = 3
 dropout = 0.1
+
+#Instancie le model Transformer
 model = TimeSeriesTransformer(feature_size, num_layers, dropout)
-criterion = torch.nn.MSELoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-# Entraînement
+
+criterion = torch.nn.MSELoss() #fonction de perte
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)  #Optimiser Adam avec learning rate de 0.001
+
+#boucle entrainement du model pour le nombre de boucle choisies
 num_epochs = 100
 batch_size = 64
 model.train()
@@ -90,7 +101,8 @@ for epoch in range(num_epochs):
         optimizer.step()
     if epoch % 10 == 0:
         print(f'Epoch {epoch}, Loss: {loss.item()}')
-# Test
+
+# Test et évaluation
 model.eval()
 with torch.no_grad():
     test_output = model(X_test)
