@@ -1,4 +1,4 @@
-﻿# **Transformer**
+﻿# **Transformer and Time Series Data**
 This code introduces our research on the use of the Transformer model for time series prediction.
 
 ## Introduction
